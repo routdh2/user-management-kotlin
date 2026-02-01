@@ -25,7 +25,7 @@ The application supports basic CRUD operations for managing users.
 - Spring Data JPA
 - MySQL
 - Docker
-- Gradle
+- Maven
 
 ---
 
