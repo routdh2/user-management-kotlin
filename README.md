@@ -130,3 +130,49 @@ docker run --name user-mysql \
 ```http
   DELETE /users/{id}
 ```
+
+## Impact analysis if we integrate with Kafka
+
+Integrating Kafka into the User Management Service can have several impacts:
+1. **Asynchronous Processing**: Kafka allows for asynchronous processing of user-related events (e.g., user creation, updates). This can improve the responsiveness of the API by offloading time-consuming tasks to background processes.
+2. **Scalability**: Kafka is designed to handle high throughput and can scale horizontally. This means that as the number of users grows, the system can handle increased load without significant performance degradation.
+3. **Event-Driven Architecture**: By integrating Kafka, the application can adopt an event-driven architecture. This allows different services to react to user events in real-time, enabling features like notifications, analytics, and auditing.
+4. **Decoupling of Services**: Kafka can help decouple different components of the application. For example, the user management service can publish events to Kafka, and other services can subscribe to these events without direct dependencies.
+5. **Data Consistency**: Kafka can help ensure data consistency across distributed systems by providing a reliable way to propagate user changes to other services.
+6. **Complexity**: Integrating Kafka adds complexity to the system. Developers need to manage Kafka clusters, handle message serialization/deserialization, and ensure proper error handling and retries.
+7. **Monitoring and Maintenance**: Kafka requires monitoring to ensure it is functioning correctly. This includes tracking message lag, broker health, and topic configurations.
+Overall, integrating Kafka can enhance the capabilities of the User Management Service, but it also requires careful planning and management to handle the added complexity.
+
+#### Application code impact
+User Management service will now:
+
+**a) Produce events**
+
+Example:
+
+- UserCreatedEvent
+
+- UserUpdatedEvent
+
+- UserDeletedEvent
+
+```http
+  userRepository.save(user)
+  kafkaTemplate.send("user.created", userEvent)
+```
+
+
+**b) Possibly consume events**
+
+Example:
+
+- React to AccountVerifiedEvent
+
+- React to UserDeactivatedEvent
+
+```http
+  @KafkaListener(topics = ["account.verified"])
+  fun handle(event: AccountVerifiedEvent) { }
+```
+
+
